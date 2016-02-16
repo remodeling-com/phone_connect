@@ -10,17 +10,17 @@
      end
 
     def hashed_response
-      @phone_data = phone_response[0]
+      @phone_data, @execution_time = phone_response
+      @phone_data
     end
 
     def execution_time
-      @time = phone_response[1]
-      return @time
+      @execution_time
     end
 
-     private
+    private
 
-     #Clean phone number as 10 digits only
+      # Clean phone number as 10 digits only
       def phone_number_cleaner!
         @phone_number =  @phone_number.gsub(/[^0-9]/, '')
         if @phone_number.to_s.size == 11 && @phone_number[0] == '1'
@@ -32,20 +32,25 @@
       def phone_response
         token = PhoneConnect.configuration.token
 
+         timeout_period = 8
          begin
-           timeout(8) do
+           timeout(timeout_period) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
-             request_time = Time.now
+
+             start_time = Time.now
              response = HTTParty.get(url)
-             response_time = Time.now if response
+             execution_time = Time.now - start_time
+
              data = Hash.from_xml(response.parsed_response)['response']
-             time = response_time - request_time if response
-             #return Hashed response
-             return data, time
+
+             # return Hashed response
+             return data, execution_time
            end
+         rescue Timeout::Error
+           return [{'status' => 'TIMEOUT', 'error_text' => 'Timeout'}, timeout_period]
          rescue Exception => exception
-           return true
+           return [{'status' => 'ERROR', 'error_text' => exception.to_s}, -1]
          end
       end
-   end
+  end
 end
