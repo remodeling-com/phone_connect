@@ -10,7 +10,12 @@
      end
 
     def hashed_response
-      @phone_data = phone_response
+      @phone_data = phone_response[0]
+    end
+
+    def execution_time
+      @time = phone_response[1]
+      return @time
     end
 
     #  def connected?
@@ -53,10 +58,13 @@
            timeout(8) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
              puts url
+             request_time = Time.now
              response = HTTParty.get(url)
+             response_time = Time.now if response
              data = Hash.from_xml(response.parsed_response)['response']
+             time = response_time - request_time if response
              #return Hashed response
-             return data
+             return data, time
            end
          rescue Exception => exception
            puts "RealPhone.connected? #{exception.inspect}"

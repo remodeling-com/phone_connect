@@ -16,6 +16,10 @@ module PhoneConnect
     @response = @real_phone_validation_object.hashed_response
   end
 
+  def self.execution_time phone_number
+    @real_phone_validation_object = PhoneConnect::RealPhoneValidation.new(phone_number)
+    @execution_time = @real_phone_validation_object.execution_time
+  end
   #optional functions if we need it
   #return just status
 
