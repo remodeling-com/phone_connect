@@ -18,28 +18,6 @@
       return @time
     end
 
-    #  def connected?
-    #    if  @phone_data
-    #      if status = @phone_data
-    #        status = status.strip
-    #      end
-    #    end
-    #    puts status.class
-    #    return status
-    #  end
-     #
-    #  def data(name)
-    #    value = nil
-    #    if (@phone_data)
-    #      if (name == 'response'  && ATTRIBUTES_LIST.include?(name))
-    #        value = @phone_data
-    #      else
-    #        value = @phone_data[name]
-    #      end
-    #    end
-    #    return value
-    #  end
-
      private
 
      #Clean phone number as 10 digits only
@@ -57,7 +35,6 @@
          begin
            timeout(8) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
-             puts url
              request_time = Time.now
              response = HTTParty.get(url)
              response_time = Time.now if response
@@ -67,7 +44,6 @@
              return data, time
            end
          rescue Exception => exception
-           puts "RealPhone.connected? #{exception.inspect}"
            return true
          end
       end
