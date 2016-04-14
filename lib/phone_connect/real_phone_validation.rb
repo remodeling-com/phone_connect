@@ -32,7 +32,7 @@
       def phone_response
         token = PhoneConnect.configuration.token
 
-         timeout_period = 8
+         timeout_period = 5
          begin
            timeout(timeout_period) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
