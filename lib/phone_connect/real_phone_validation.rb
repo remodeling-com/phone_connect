@@ -32,6 +32,7 @@
       def phone_response
         token = PhoneConnect.configuration.token
         timeout_period = PhoneConnect.configuration.timeout.to_i
+        retries = 3
          begin
            timeout(timeout_period) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
@@ -46,7 +47,10 @@
              return data, execution_time
            end
          rescue Timeout::Error
-           return [{'status' => 'TIMEOUT', 'error_text' => 'Timeout'}, timeout_period]
+           retries -= 1
+           return [{'status' => 'TIMEOUT', 'error_text' => 'Timeout'}, timeout_period] if retries == 0
+           sleep 2
+           retry
          rescue Exception => exception
            return [{'status' => 'ERROR', 'error_text' => exception.to_s}, -1]
          end
