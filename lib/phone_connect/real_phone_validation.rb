@@ -31,8 +31,7 @@
       #return API response as HASH
       def phone_response
         token = PhoneConnect.configuration.token
-
-         timeout_period = 5
+        timeout_period = PhoneConnect.configuration.timeout.to_i
          begin
            timeout(timeout_period) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
