@@ -34,7 +34,7 @@
         timeout_period = PhoneConnect.configuration.timeout.to_i
         retries = 3
          begin
-           timeout(timeout_period) do
+           Timeout.timeout(timeout_period) do
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
 
              start_time = Time.now
@@ -55,5 +55,5 @@
            return [{'status' => 'ERROR', 'error_text' => exception.to_s}, -1]
          end
       end
-  end
-end
+   end
+ end
