@@ -41,7 +41,7 @@
              response = HTTParty.get(url)
              execution_time = Time.now - start_time
 
-             data = Hash.from_xml(response.parsed_response)['response']
+             data = response.parsed_response['response']
 
              # return Hashed response
              return data, execution_time
