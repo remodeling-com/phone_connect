@@ -1,6 +1,6 @@
  module PhoneConnect
    class RealPhoneValidation
-     BASE_URI = 'http://api.realvalidation.com/rpvWebService/RealPhoneValidationTurbo.php?token='
+     BASE_URI = 'https://api.realvalidation.com/rpvWebService/RealPhoneValidationTurbo.php?token='
      ATTRIBUTES_LIST = ['response', 'status', 'error_text', 'iscell', 'cnam', 'carrier']
      attr_accessor :phone_number
 
@@ -38,7 +38,7 @@
              url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
 
              start_time = Time.now
-             response = HTTParty.get(url)
+             response = HTTParty.get(url, verify: false)
              execution_time = Time.now - start_time
 
              data = response.parsed_response['response']
