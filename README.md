@@ -1,8 +1,6 @@
 # PhoneConnect
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/phone_connect`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This is Ruby gem integrated with [RealPhoneValidation](https://realphonevalidation.com/) API to validate / check if a US number number is active or not.
 
 ## Installation
 
@@ -22,13 +20,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Add the following configurations in `config/initializers`:
 
-## Development
+```ruby
+# phone_connect_config.rb
+    
+PhoneConnect.configure do |config|
+  config.token = "5FA3B89E-21A4-C4E1-2AB2-B87BA3C1659F" # RealPhoneValidation Token
+  config.timeout = 5 # Request Timeout
+end
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Then simply use the following command:
+```ruby
+response = PhoneConnect.response "9991112222" # your testing phone numebr
+# => {"status"=>"connected", "error_text"=>nil, "iscell"=>"Y", "cnam"=>"WIRELESS CALLER", "carrier"=>"Verizon Wireless"}
+# => {"status"=>"disconnected", "error_text"=>nil, "iscell"=>"N", "cnam"=>"Unavailable", "carrier"=>"Pioneer Tel Coop"}
+# status could be connected|connected-75|busy|pending|disconnected
+```
 
 ## Contributing
 
