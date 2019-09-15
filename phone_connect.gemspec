@@ -6,16 +6,16 @@ require 'phone_connect/version'
 Gem::Specification.new do |spec|
   spec.name          = "phone_connect"
   spec.version       = PhoneConnect::VERSION
-  spec.authors       = ["homoudrana"]
-  spec.email         = ["rana@leadicious.com"]
+  spec.authors       = ["homoudrana", 'Zakwan Hajjar']
+  spec.email         = ["rana@remodeling.com", 'zakwan.haj@gmail.com']
 
-  spec.summary       = %q{Check of real ohone number connected ot not.}
-  spec.description   = %q{Check of real ohone number connected ot not.}
+  spec.summary       = %q{Check and determine the connectivity of US phone numbers}
+  spec.description   = %q{Check and determine the connectivity of US phone numbers}
   spec.homepage      = ""
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  
+
   # delete this section to allow pushing this gem to any host.
   # if spec.respond_to?(:metadata)
   #   spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_runtime_dependency "httparty"
 end
