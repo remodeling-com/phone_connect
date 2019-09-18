@@ -7,16 +7,16 @@ module PhoneConnect
     attr_accessor :configuration
 
     def configure
-      configuration ||= Configuration.new
+      self.configuration ||= Configuration.new
       yield(configuration)
     end
 
     def reset
-     @configuration = Configuration.new
+      @configuration = Configuration.new
     end
 
-    def response(phone_number)
-      PhoneConnect::RealPhoneValidation.new(phone_number).response
+    def fetch(phone_number)
+      PhoneConnect::RealPhoneValidation.new(phone_number)
     end
   end
 end

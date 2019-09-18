@@ -1,7 +1,7 @@
 require 'httparty'
 
 module PhoneConnect
-  class RealValidation
+  class RealPhoneValidation
     include HTTParty
     base_uri 'https://api.realvalidation.com'
 
@@ -14,7 +14,9 @@ module PhoneConnect
 
     def connected?
       status = response['status']
-      status.match(/^(connected|connected-75|busy|pending)$/i)
+      return false unless status
+
+      !!status.match(/^(connected|connected-75|busy|pending)$/i)
     end
 
     def response
@@ -49,15 +51,15 @@ module PhoneConnect
         result = self.class.post('/rpvWebService/RealPhoneValidationTurbo.php', options).parsed_response
       rescue Timeout::Error
         retries -= 1
-        if retries > 0
+        if retries.positive?
           sleep 1; retry
         end
-        result = {'status' => 'TIMEOUT', 'error_text' => 'Timeout'}
+        result = { 'status' => 'TIMEOUT', 'error_text' => 'Timeout' }
       rescue Exception => exception
-        result = {'status' => 'ERROR', 'error_text' => exception.to_s}
+        result = { 'status' => 'ERROR', 'error_text' => exception.to_s }
       end
-
       @execution_time = Time.now - start_time
+
       result
     end
   end
