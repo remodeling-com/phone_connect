@@ -1,6 +1,8 @@
 # PhoneConnect
 
-This is Ruby gem integrated with [RealPhoneValidation](https://realphonevalidation.com/) API to validate / check if a US number number is active or not.
+This is a Ruby gem integrated with [RealPhoneValidation](https://realphonevalidation.com/) Turbo API to validate / determine the connectivity of US phone numbers.
+
+It provides: Connected/Disconnected, Phone Type (landline, cell, VoIP), & Carrier ID.
 
 ## Installation
 
@@ -24,7 +26,7 @@ Add the following configurations in `config/initializers`:
 
 ```ruby
 # phone_connect_config.rb
-    
+
 PhoneConnect.configure do |config|
   config.token = "5FA3B89E-21A4-C4E1-2AB2-B87BA3C1659F" # RealPhoneValidation Token
   config.timeout = 5 # Request Timeout
@@ -47,4 +49,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

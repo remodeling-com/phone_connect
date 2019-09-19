@@ -1,59 +1,66 @@
- module PhoneConnect
-   class RealPhoneValidation
-     BASE_URI = 'https://api.realvalidation.com/rpvWebService/RealPhoneValidationTurbo.php?token='
-     ATTRIBUTES_LIST = ['response', 'status', 'error_text', 'iscell', 'cnam', 'carrier']
-     attr_accessor :phone_number
+require 'httparty'
 
-     def initialize(phone_number)
-       @phone_number = phone_number
-       phone_number_cleaner!
-     end
+module PhoneConnect
+  class RealPhoneValidation
+    include HTTParty
+    base_uri 'https://api.realvalidation.com'
 
-    def hashed_response
-      @phone_data, @execution_time = phone_response
-      @phone_data
+    attr_reader :phone_number, :execution_time
+
+    def initialize(phone_number)
+      @phone_number = phone_number
+      normalize!
     end
 
-    def execution_time
-      @execution_time
+    def connected?
+      status = response['status']
+      return false unless status
+
+      !!status.match(/^(connected|connected-75|busy|pending)$/i)
+    end
+
+    def response
+      @parsed_response ||= validate
     end
 
     private
 
-      # Clean phone number as 10 digits only
-      def phone_number_cleaner!
-        @phone_number =  @phone_number.gsub(/[^0-9]/, '')
-        if @phone_number.to_s.size == 11 && @phone_number[0] == '1'
-          @phone_number[0] = ''
+    def normalize!
+      @phone_number =  @phone_number.to_s.gsub(/[^0-9]/, '')
+      # Remove first digit `1` (US key) if the phone's length is 11 digits
+      @phone_number[0] = '' if @phone_number.length == 11 && @phone_number[0] == '1'
+    end
+
+    def options
+      {
+        verify: false,
+        timeout: PhoneConnect.configuration.timeout,
+        body: {
+          output: 'json',
+          token: PhoneConnect.configuration.token,
+          phone: @phone_number
+        }
+      }
+    end
+
+    def validate
+      start_time = Time.now
+      retries = 3
+      result = {}
+      begin
+        result = self.class.post('/rpvWebService/RealPhoneValidationTurbo.php', options).parsed_response
+      rescue Timeout::Error
+        retries -= 1
+        if retries.positive?
+          sleep 1; retry
         end
+        result = { 'status' => 'TIMEOUT', 'error_text' => 'Timeout' }
+      rescue Exception => exception
+        result = { 'status' => 'ERROR', 'error_text' => exception.to_s }
       end
+      @execution_time = Time.now - start_time
 
-      #return API response as HASH
-      def phone_response
-        token = PhoneConnect.configuration.token
-        timeout_period = PhoneConnect.configuration.timeout.to_i
-        retries = 3
-         begin
-           Timeout.timeout(timeout_period) do
-             url = "#{BASE_URI}#{token}&phone=#{@phone_number}"
-
-             start_time = Time.now
-             response = HTTParty.get(url, verify: false)
-             execution_time = Time.now - start_time
-
-             data = response.parsed_response['response']
-
-             # return Hashed response
-             return data, execution_time
-           end
-         rescue Timeout::Error
-           retries -= 1
-           return [{'status' => 'TIMEOUT', 'error_text' => 'Timeout'}, timeout_period] if retries == 0
-           sleep 2
-           retry
-         rescue Exception => exception
-           return [{'status' => 'ERROR', 'error_text' => exception.to_s}, -1]
-         end
-      end
-   end
- end
+      result
+    end
+  end
+end
