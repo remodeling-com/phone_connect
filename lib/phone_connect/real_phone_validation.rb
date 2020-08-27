@@ -23,6 +23,10 @@ module PhoneConnect
       @parsed_response ||= validate
     end
 
+    def dnc_response
+      @parsed_response ||= dnc_validate
+    end
+
     private
 
     def normalize!
@@ -49,6 +53,26 @@ module PhoneConnect
       result = {}
       begin
         result = self.class.post('/rpvWebService/RealPhoneValidationTurbo.php', options).parsed_response
+      rescue Timeout::Error
+        retries -= 1
+        if retries.positive?
+          sleep 1; retry
+        end
+        result = { 'status' => 'TIMEOUT', 'error_text' => 'Timeout' }
+      rescue Exception => exception
+        result = { 'status' => 'ERROR', 'error_text' => exception.to_s }
+      end
+      @execution_time = Time.now - start_time
+
+      result
+    end
+
+    def dnc_validate
+      start_time = Time.now
+      retries = 3
+      result = {}
+      begin
+        result = self.class.post('/rpvWebService/DNCLookup.php', options).parsed_response
       rescue Timeout::Error
         retries -= 1
         if retries.positive?
